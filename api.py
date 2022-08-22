@@ -13,7 +13,7 @@ def message(msg: str, channel_id: int, token: str):
 
 
 # noinspection PyBroadException
-def mention(persons_id, channel_id, token):
+def mention(persons_id: int, channel_id: int, token: str):
     payload = {
         "content": f"<@{persons_id}>"
     }
@@ -25,7 +25,7 @@ def mention(persons_id, channel_id, token):
 
 
 # noinspection PyBroadException
-def join(code, token):
+def join(code: str, token: str):
     if 'discord.gg/' in code:
         code = code.replace('discord.gg/', '')
         code = code.replace('https://', '')
@@ -37,7 +37,7 @@ def join(code, token):
         pass
 
 
-def spoiler_spam(channel_id, token):
+def spoiler_spam(channel_id: int, token: str):
     newspam = ''
     for _ in range(30):
         newspam += f'||e||'
@@ -49,7 +49,7 @@ def spoiler_spam(channel_id, token):
     requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data=payload, headers={'authorization': token})
 
 
-def account_info(token, types):
+def account_info(token: str, types: str):
     e = requests.get('https://discord.com/api/v9/users/@me', headers={'authorization': token}).json()
     print(e)
     if types == 'whole':
@@ -64,7 +64,7 @@ def account_info(token, types):
         return e['id']
 
 
-def auto_discriminator(token, password, wanted_discriminator):
+def auto_discriminator(token: str, password: str, wanted_discriminator: str):
     # change name to #number to get a new one
     Token = {
         "authorization": f"{token}",
@@ -85,11 +85,11 @@ def auto_discriminator(token, password, wanted_discriminator):
         time.sleep(10)
 
 
-def change_name(password, token):
+def change_name(password: str, token: str):
     pass
 
 
-def get_messages(channel_id, token, returns=False):
+def get_messages(channel_id: int, token: str, returns=False: bool):
     d = requests.get(f'https://discord.com/api/v9/channels/{channel_id}/messages?limit=100', headers={'authorization': token}).text
     with open(f'msgs\\{channel_id}.json', 'w') as e:
         e.write(d)
@@ -98,7 +98,7 @@ def get_messages(channel_id, token, returns=False):
 
 
 # noinspection PyGlobalUndefined
-def self_reply(msg, channel, token, wait_time):
+def self_reply(msg: str, channel: int, token: str, wait_time=0: int):
     global msg_id
     initial_msg = False
     msg = msg.split(' ')
@@ -130,37 +130,29 @@ def self_reply(msg, channel, token, wait_time):
             msg_num += 1
 
 
-def reply(msg, channel, msgid, token):
+def reply(msg: str, channel: int, msgid: int, token: str):
     requests.post(f"https://discord.com/api/v9/channels/{channel}/messages", json={"content": f"{msg}","message_reference": {"channel_id": f"{channel}","message_id": f"{msgid}"}}, headers={'authorization': token})
 
 
-def ghost_ping(persons_id, channel, token):
+def ghost_ping(persons_id: int, channel: int, token: str):
     d = requests.post(f"https://discord.com/api/v9/channels/{channel}/messages", data={'content': f'<@{persons_id}>'}, headers={'authorization': token}).text
     d = d.split(',')
     msg__id = d[0].replace("'['{", '').replace('"id": "', '').replace('"', '').replace("'", '').replace('{', '')
     requests.delete(f'https://discord.com/api/v9/channels/{channel}/messages/{msg__id}', headers={'authorization': token})
 
 
-def send_code(code, channel, token):
+def send_code(code: str, channel: int, token: str):
     payload = {
         'content': f'```py\n{code}```'
     }
     print(payload)
     print(requests.post(f"https://discord.com/api/v9/channels/{channel}/messages", data=payload, headers=token))
 
-
-def upload_code(code):
-    banner = 'this was sent by a request\n\n'
-    real_bytes_code = banner.encode('utf-8') + code.encode('utf-8')
-    e = requests.post('https://paste.pythondiscord.com/documents', data=real_bytes_code).text
-    print(f'https://paste.pythondiscord.com/' + str(e).replace('{"key":"', '').replace('"}', '') + '.py')
-
-
-def server_nick(guild_id, new_nickname, token):
+def server_nick(guild_id: int, new_nickname: str, token: str):
     print(requests.patch(f'https://discord.com/api/v9/guilds/{guild_id}/members/@me', json={"nick": f"{new_nickname}"}, headers={'authorization': token}).text)
 
 
-def profile_color(rgb, token):
+def profile_color(rgb: str, token: str):
     # noinspection PyGlobalUndefined
     def get_accent(rgb_value):
         global final_number, number
@@ -195,8 +187,8 @@ def profile_color(rgb, token):
     requests.patch('https://discord.com/api/v9/users/@me', json={"accent_color": get_accent(rgb_value=rgb)}, headers={'authorization': token})
 
 
-def emoji_message(messages, channel_id, token):
-    msg = messages.replace('a', "🇦").replace('A', '🇦').replace('b', '🇧').replace('B', '🇧').replace('c',
+def emoji_message(message: str, channel_id: int, token: str):
+    msg = message.replace('a', "🇦").replace('A', '🇦').replace('b', '🇧').replace('B', '🇧').replace('c',
                                                                                                        '🇨').replace(
         'C',
         '🇨').replace(
@@ -222,7 +214,7 @@ def emoji_message(messages, channel_id, token):
     requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data={'content': f'{new_msg}'}, headers=token)
 
 
-def download_pfp(token, size):
+def download_pfp(token: str, size: int):
     avatar = account_info(token=token, types='avatar')
     id = account_info(token={'authorization': token}, types='id')
     r = requests.get(f'https://cdn.discordapp.com/avatars/{id}/{avatar}.webp?size={size}')
@@ -230,7 +222,7 @@ def download_pfp(token, size):
         with open(f'pfps\\{avatar}.png', 'wb') as f:
             f.write(r.content)
 
-def emoji_exploit(token, guild_id):
+def emoji_exploit(token: str, guild_id: int):
     res = requests.get(f'https://discord.com/api/v9/guilds/{guild_id}/emojis', headers={'authorization': token})
     print(res.json())
     for item in res.json():
